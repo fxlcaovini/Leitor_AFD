@@ -1,0 +1,52 @@
+{
+  "name": "leitor_afd",
+  "version": "1.3.0",
+  "description": "Filter ControliD",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.leitorAFD.desktop",
+    "productName": "Leitor AFD",
+    "copyright": "© 2025 Vinicius Falcão",
+    "files": [
+      "**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Leitor AFD",
+      "artifactName": "Leitor_AFD.exe"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "fxlcaovini",
+        "repo": "leitor_AFD"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  },
+  "author": "",
+  "license": "ISC"
+}

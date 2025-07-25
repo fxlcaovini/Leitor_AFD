@@ -1,0 +1,575 @@
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <!-- http://wixtoolset.org/documentation/manual/v3/xsd/wix/product.html -->
+  <Product Id="6C0F1E27-7AB9-4400-8C13-E8867C7D74C6" 
+           UpgradeCode="bfe8f5a4-0968-41e6-a77f-59f5a41263c2"
+           Name = "LeitorControliD (Machine - MSI)"
+           Version="1.0.0.0"
+           Manufacturer="Vinicius Falcao"
+           Language="1033">
+    <!-- Only run this installer on Windows 7 or up (or if it"s already installed, I guess) -->
+    <!-- <Condition Message="This application is only supported on Windows 7 or higher.">
+      <![CDATA[Installed OR (VersionNT >= 601)]]>
+    </Condition> -->
+    <!-- http://wixtoolset.org/documentation/manual/v3/xsd/wix/package.html -->
+    <Package InstallerVersion="405"
+             Compressed="yes"
+             Comments="Windows Installer Package"
+             Platform="x86"
+             InstallScope="perMachine"/>
+    <!-- Don't allow downgrades -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A later version of this product is already installed. Setup will now exit."/>
+    <!-- This will hide our Uninstall entry in Apps & Features. We doing this so
+    we can write our own which we can better control. -->
+    <Property Id="ARPSYSTEMCOMPONENT" Value="1" />
+    <!-- While the MSI package is hidden in Apps & Features, it can still be queried
+    via PowerShell and other means. To differentiate we give the public entry a slightly
+    different name to make admins life easier.  -->
+    <Property Id="VisibleProductName" Value="LeitorControliD (Machine)" />
+    <!-- Tells the package to install perUser or perMachine. In case of perUser, all
+    files will be redirected to the user profile and all registry entries to HKCU. -->
+    <Property Id="MSIINSTALLPERUSER" Secure="yes" Value="0" />
+    <!-- Overides the default install mode. It solves a problem where
+    individual packaged files that have the same version as in previous
+    installed App version will be deleted if the files are in use during
+    this upgrade. Unfortunately this causes an ICE 40 warning during linking. -->
+    <Property Id="REINSTALLMODE" Value="emus" />
+    <!-- Overrides the default reboot behavior if files are in use during the upgrade.
+    By default, this will be set to "ReallySuppress" to make sure no unexpected reboot will happpen.-->
+    <Property Id="REBOOT" Value="ReallySuppress" />
+    <!-- Installlation level to use that determines which features are installed.
+    see guides/enduser.md to check which Install Level maps to which feature that will
+    correspondingly get installed.
+    If not set, this will default to "2" (Main Feature, Launch On Login) -->
+    <Property Id="INSTALLLEVEL" Value="2" />
+    <!-- Allows to customize the Windows user group that gets access rights on
+    the install folder in cas the auto-updater is installed. User that run the App
+    must be part of that user group to be able to auto-update. -->
+    <Property Id="UPDATERUSERGROUP" Value="Users" />
+    <!-- A property to define whether the auto-updater is enabled when the
+    feature gets installed. This way the update can be installed but also be disabled
+    by overwriting the default value.  -->
+    <Property Id="AUTOUPDATEENABLED" Value="1" />
+    <!-- Necessary registry search to find the install path which is used by the
+    PurgeOnUninstall action. Since this package can be installed perUser or perMachine,
+    we have to look in both places. First successful search wins. -->
+    <Property Id="INSTALLPATH">
+      <RegistrySearch Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq"
+                      Root="HKCU" 
+                      Type="raw"
+                      Id="INSTALLPATH_REGSEARCH_HKCU"
+                      Name="InstallPath"
+                      Win64="no"/>
+      <RegistrySearch Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq"
+                      Root="HKLM" 
+                      Type="raw"
+                      Id="INSTALLPATH_REGSEARCH_HKLM"
+                      Name="InstallPath"
+                      Win64="no"/>
+    </Property>
+    <!-- Lets change the product name depending on the perUser installMode. 
+    This way the user and admins can see in which scope the MSI was installed. -->
+    <SetProperty Action="SetVisibleProductName" Id="VisibleProductName" Sequence="both" Before="AppSearch"  Value="LeitorControliD (User)">
+      <![CDATA[MSIINSTALLPERUSER = "1"]]>
+    </SetProperty>
+    <!-- Again we give thee MSI generaten entry a slightly different name to help 
+    differentiate between the public one and the invisible one. -->
+    <SetProperty Action="SetProductName" Id="ProductName" Sequence="both" Before="AppSearch"  Value="LeitorControliD (User - MSI)">
+      <![CDATA[MSIINSTALLPERUSER = "1"]]>
+    </SetProperty>
+
+    <Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
+
+
+
+    <!-- Step 2: Add files and directories -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+       <!-- Installation files to %PROGRAMFILES% -->
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="LeitorControliD">
+          <Directory Id="__a6e71e91_f496_4a36_afae_859ef15a8025" Name="app-1.0.0">
+            <Directory Id="_locales_eb9d1a69_869a_4e02_b707_f9b895cd79f5" Name="locales">
+              <Component Id="_locales_af.pak_66d60539_e93a_4a99_aad8_5cfaf548b4b8" Guid="aaa7efc1-eb2a-483f-bc66-80ac192e171a" Win64="no">
+                <File Name="af.pak" Id="_locales_af.pak_66d60539_e93a_4a99_aad8_5cfaf548b4b8" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\af.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_am.pak_6ee941da_fd36_479d_b0c4_72204c5a4c53" Guid="d3094a73-b7ab-43ad-b697-0afa1308aab3" Win64="no">
+                <File Name="am.pak" Id="_locales_am.pak_6ee941da_fd36_479d_b0c4_72204c5a4c53" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\am.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ar.pak_190d805e_adee_44a2_ae22_1b0ec4785126" Guid="8fa7d55c-d4e6-4bc6-b42a-32451b1f16c0" Win64="no">
+                <File Name="ar.pak" Id="_locales_ar.pak_190d805e_adee_44a2_ae22_1b0ec4785126" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ar.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_bg.pak_55ad7ff7_dd88_4250_894f_4c937b259f37" Guid="30b8368d-c661-4e05-be60-82af74f768af" Win64="no">
+                <File Name="bg.pak" Id="_locales_bg.pak_55ad7ff7_dd88_4250_894f_4c937b259f37" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\bg.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_bn.pak_18d9f79c_0673_498c_bffd_65cc38029404" Guid="1fead301-3b1b-4482-b1fc-0988f6dae72e" Win64="no">
+                <File Name="bn.pak" Id="_locales_bn.pak_18d9f79c_0673_498c_bffd_65cc38029404" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\bn.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ca.pak_ec483033_3c2e_4605_8d9a_fbc6ffb86e98" Guid="d24a6ac8-c31f-4905-a786-2c76dd41a3a7" Win64="no">
+                <File Name="ca.pak" Id="_locales_ca.pak_ec483033_3c2e_4605_8d9a_fbc6ffb86e98" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ca.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_cs.pak_c6062c8c_7040_4d47_a092_5394347a8e45" Guid="a3bd8136-731e-4ba7-b115-35491a1e8898" Win64="no">
+                <File Name="cs.pak" Id="_locales_cs.pak_c6062c8c_7040_4d47_a092_5394347a8e45" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\cs.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_da.pak_43d1726d_8ea8_490b_a7f1_b35a8f5df50c" Guid="27026c38-3406-4d98-ace3-d04b7e9aa34a" Win64="no">
+                <File Name="da.pak" Id="_locales_da.pak_43d1726d_8ea8_490b_a7f1_b35a8f5df50c" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\da.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_de.pak_0a3f7eb2_9402_4c1a_b381_2d2c03c2786b" Guid="604e96c8-1bdc-49d6-86d5-a589a1e1edaa" Win64="no">
+                <File Name="de.pak" Id="_locales_de.pak_0a3f7eb2_9402_4c1a_b381_2d2c03c2786b" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\de.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_el.pak_3c2ae5a5_b943_43b6_9bb1_a89639a710b3" Guid="fe33ba3f-d2f9-459a-8676-f334c3a70611" Win64="no">
+                <File Name="el.pak" Id="_locales_el.pak_3c2ae5a5_b943_43b6_9bb1_a89639a710b3" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\el.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_en_GB.pak_fa5883a3_46a9_4ba4_8dcf_0fd3f907ab43" Guid="ed8d97ec-669a-4ad0-b963-6519cbf66a07" Win64="no">
+                <File Name="en-GB.pak" Id="_locales_en_GB.pak_fa5883a3_46a9_4ba4_8dcf_0fd3f907ab43" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\en-GB.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_en_US.pak_058af64d_64d5_4b95_9e7e_c0320e81a2ec" Guid="0c80c82f-c449-49d4-a22a-f9c0d2a6d5bb" Win64="no">
+                <File Name="en-US.pak" Id="_locales_en_US.pak_058af64d_64d5_4b95_9e7e_c0320e81a2ec" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\en-US.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_es_419.pak_ef7873bf_3c04_4e97_9086_c6422e9dfaba" Guid="1057c2dc-199f-4242-b1f4-fdb75fe9f773" Win64="no">
+                <File Name="es-419.pak" Id="_locales_es_419.pak_ef7873bf_3c04_4e97_9086_c6422e9dfaba" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\es-419.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_es.pak_c0910ec0_5d14_4081_9efb_039c74a3ceca" Guid="e629bcb4-9ba2-4929-b5bd-abc1ae5ffef1" Win64="no">
+                <File Name="es.pak" Id="_locales_es.pak_c0910ec0_5d14_4081_9efb_039c74a3ceca" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\es.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_et.pak_095769a6_80b3_4c3f_a01c_2a557398a47e" Guid="4e94a608-5831-4e69-b7c8-84720f1e7b76" Win64="no">
+                <File Name="et.pak" Id="_locales_et.pak_095769a6_80b3_4c3f_a01c_2a557398a47e" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\et.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_fa.pak_9292bf99_09fb_4889_9072_a2b9f012e6b0" Guid="1a127780-2b78-47c5-a0aa-1f61ed4c49d9" Win64="no">
+                <File Name="fa.pak" Id="_locales_fa.pak_9292bf99_09fb_4889_9072_a2b9f012e6b0" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\fa.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_fi.pak_b6d3a3f7_6580_4522_8735_67c273fc94aa" Guid="387e78e7-9f3b-450b-aa9f-a8157c985ef8" Win64="no">
+                <File Name="fi.pak" Id="_locales_fi.pak_b6d3a3f7_6580_4522_8735_67c273fc94aa" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\fi.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_fil.pak_0d2fd058_f996_43f9_a8ec_607eea064dc8" Guid="182acd66-a297-4d80-9e13-c58358e889ac" Win64="no">
+                <File Name="fil.pak" Id="_locales_fil.pak_0d2fd058_f996_43f9_a8ec_607eea064dc8" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\fil.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_fr.pak_95310fe2_1506_4539_bced_5dd3b082e916" Guid="0a8e462d-e7e9-48d3-a0ac-a30d771d2277" Win64="no">
+                <File Name="fr.pak" Id="_locales_fr.pak_95310fe2_1506_4539_bced_5dd3b082e916" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\fr.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_gu.pak_2e545ecc_09dd_454c_8d4e_3169e3429b39" Guid="78469669-92cf-48cb-ad03-05f4a014a76c" Win64="no">
+                <File Name="gu.pak" Id="_locales_gu.pak_2e545ecc_09dd_454c_8d4e_3169e3429b39" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\gu.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_he.pak_2ed66cad_e3d1_4e2f_8595_6735293ce7b2" Guid="c5a37626-b490-4963-b4e3-637a91bc36cc" Win64="no">
+                <File Name="he.pak" Id="_locales_he.pak_2ed66cad_e3d1_4e2f_8595_6735293ce7b2" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\he.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_hi.pak_85d388c7_850b_4fa3_b68d_58e927517826" Guid="ea86f5de-86b0-4b52-ae06-9bffa83388e8" Win64="no">
+                <File Name="hi.pak" Id="_locales_hi.pak_85d388c7_850b_4fa3_b68d_58e927517826" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\hi.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_hr.pak_42be367a_cbb4_4b8c_b8b8_367996909672" Guid="4e13d019-88f8-40d9-855c-e70780f2bb8c" Win64="no">
+                <File Name="hr.pak" Id="_locales_hr.pak_42be367a_cbb4_4b8c_b8b8_367996909672" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\hr.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_hu.pak_3884b405_e55e_4d18_94ca_4878bc8a8386" Guid="cb7b21ec-7e48-47f2-ac22-1cf5479edf49" Win64="no">
+                <File Name="hu.pak" Id="_locales_hu.pak_3884b405_e55e_4d18_94ca_4878bc8a8386" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\hu.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_id.pak_80b8cf5d_ed41_4c5f_b7d9_191897819e81" Guid="0ede6201-233c-4f6c-af15-782332832f61" Win64="no">
+                <File Name="id.pak" Id="_locales_id.pak_80b8cf5d_ed41_4c5f_b7d9_191897819e81" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\id.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_it.pak_c347fe16_4862_4037_8a05_e57fac965b84" Guid="17c6e69f-b397-4a1f-8d6b-64ece21425ff" Win64="no">
+                <File Name="it.pak" Id="_locales_it.pak_c347fe16_4862_4037_8a05_e57fac965b84" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\it.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ja.pak_2eced482_a398_4a3d_8c83_00ba989115a3" Guid="e8829f07-7b78-4d7f-b558-07634917850e" Win64="no">
+                <File Name="ja.pak" Id="_locales_ja.pak_2eced482_a398_4a3d_8c83_00ba989115a3" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ja.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_kn.pak_8910f386_87ee_4cc6_8c3e_d848ddda33ba" Guid="dfe544f8-6cda-4124-8252-a8dbc0aad2e3" Win64="no">
+                <File Name="kn.pak" Id="_locales_kn.pak_8910f386_87ee_4cc6_8c3e_d848ddda33ba" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\kn.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ko.pak_6500ebef_f472_462c_b137_8a1371ef1403" Guid="30cde73a-bae0-4066-a0be-7592c292207f" Win64="no">
+                <File Name="ko.pak" Id="_locales_ko.pak_6500ebef_f472_462c_b137_8a1371ef1403" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ko.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_lt.pak_f2362d8a_4960_4fec_8eab_674adb278e1c" Guid="0626d5a3-ac3a-4530-aac0-cdb3c259bd4a" Win64="no">
+                <File Name="lt.pak" Id="_locales_lt.pak_f2362d8a_4960_4fec_8eab_674adb278e1c" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\lt.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_lv.pak_dc984fb4_9c04_4287_8423_5bd6447858d3" Guid="c7cdf1c4-a55a-4951-958f-650d87d1e8a9" Win64="no">
+                <File Name="lv.pak" Id="_locales_lv.pak_dc984fb4_9c04_4287_8423_5bd6447858d3" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\lv.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ml.pak_00100d34_307d_4b01_b031_15a67d2835cc" Guid="f1ed33e4-aadd-4444-97d9-2526ab0a1281" Win64="no">
+                <File Name="ml.pak" Id="_locales_ml.pak_00100d34_307d_4b01_b031_15a67d2835cc" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ml.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_mr.pak_51ae1001_4107_4524_9cce_1d13595de595" Guid="01932e3a-b93e-476b-ac5c-8c3ffc2f3b32" Win64="no">
+                <File Name="mr.pak" Id="_locales_mr.pak_51ae1001_4107_4524_9cce_1d13595de595" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\mr.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ms.pak_62f0d101_7d10_48f2_a8bc_8bd1e97b66b3" Guid="3967497b-c088-49db-b545-5fdb20ce219b" Win64="no">
+                <File Name="ms.pak" Id="_locales_ms.pak_62f0d101_7d10_48f2_a8bc_8bd1e97b66b3" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ms.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_nb.pak_30922d34_757d_421c_bb79_6f28de0d307c" Guid="c3f5416a-c8b7-457d-899d-0feb393c5bdb" Win64="no">
+                <File Name="nb.pak" Id="_locales_nb.pak_30922d34_757d_421c_bb79_6f28de0d307c" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\nb.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_nl.pak_6a68957a_669a_41d1_b640_2d53142e2b4f" Guid="65a4e854-4793-4e50-bdc9-d0bc0762b34c" Win64="no">
+                <File Name="nl.pak" Id="_locales_nl.pak_6a68957a_669a_41d1_b640_2d53142e2b4f" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\nl.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_pl.pak_1f6e3421_ee25_4f26_9586_1fa90b05fbb8" Guid="1f59b07b-fade-46ed-8e8f-ac23a31ccadf" Win64="no">
+                <File Name="pl.pak" Id="_locales_pl.pak_1f6e3421_ee25_4f26_9586_1fa90b05fbb8" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\pl.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_pt_BR.pak_d5422f45_a7c0_4f9c_a7e7_bc9d5def9628" Guid="c520e38d-0eb1-4ab0-b9b7-11148c6f8023" Win64="no">
+                <File Name="pt-BR.pak" Id="_locales_pt_BR.pak_d5422f45_a7c0_4f9c_a7e7_bc9d5def9628" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\pt-BR.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_pt_PT.pak_2abe9910_c3e1_4fff_8d14_f5456c6559b1" Guid="e0f32833-1a06-4324-ab91-8da7357ab1d5" Win64="no">
+                <File Name="pt-PT.pak" Id="_locales_pt_PT.pak_2abe9910_c3e1_4fff_8d14_f5456c6559b1" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\pt-PT.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ro.pak_9320a4be_5559_4220_ad2e_3f2bec98ce5c" Guid="e89b7391-ed1b-4c87-bbd7-7bf5e0f6a5d1" Win64="no">
+                <File Name="ro.pak" Id="_locales_ro.pak_9320a4be_5559_4220_ad2e_3f2bec98ce5c" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ro.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ru.pak_8e327e31_1658_4a07_9563_9109045469de" Guid="a376ed48-4994-4c2b-8ecb-97bce58b772e" Win64="no">
+                <File Name="ru.pak" Id="_locales_ru.pak_8e327e31_1658_4a07_9563_9109045469de" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ru.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_sk.pak_fccf17fa_3b36_4275_8343_fd29f1c3a5d2" Guid="ee08bf08-b3b1-4378-aba4-6c355bab66b6" Win64="no">
+                <File Name="sk.pak" Id="_locales_sk.pak_fccf17fa_3b36_4275_8343_fd29f1c3a5d2" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\sk.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_sl.pak_e5cefebd_bcb5_4c93_86ab_6df202c2ad76" Guid="2c8e78eb-12c2-42ef-9583-62372801ef9e" Win64="no">
+                <File Name="sl.pak" Id="_locales_sl.pak_e5cefebd_bcb5_4c93_86ab_6df202c2ad76" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\sl.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_sr.pak_d286aa81_c8ed_4a57_a360_c64797ac3af9" Guid="ae003336-0c8e-43b1-81e3-e9e8981df64d" Win64="no">
+                <File Name="sr.pak" Id="_locales_sr.pak_d286aa81_c8ed_4a57_a360_c64797ac3af9" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\sr.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_sv.pak_d2ff95ae_93de_4cee_bcf1_b9ae6b29b3c7" Guid="9ab9a628-073f-4e07-8026-ed3b7628d200" Win64="no">
+                <File Name="sv.pak" Id="_locales_sv.pak_d2ff95ae_93de_4cee_bcf1_b9ae6b29b3c7" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\sv.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_sw.pak_2067dd64_e354_4e56_8813_13e70376577f" Guid="b143d503-63d2-4b5a-b19d-add79483cae1" Win64="no">
+                <File Name="sw.pak" Id="_locales_sw.pak_2067dd64_e354_4e56_8813_13e70376577f" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\sw.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ta.pak_040cbef9_7009_4493_a9df_9e8f40f6fd56" Guid="d790168c-dda8-4862-af97-980721e23abf" Win64="no">
+                <File Name="ta.pak" Id="_locales_ta.pak_040cbef9_7009_4493_a9df_9e8f40f6fd56" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ta.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_te.pak_de1bbd12_1d80_4f05_a7bd_0aed314f7438" Guid="4cfb1bf3-1aa4-436b-a756-3cb571aa0bb6" Win64="no">
+                <File Name="te.pak" Id="_locales_te.pak_de1bbd12_1d80_4f05_a7bd_0aed314f7438" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\te.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_th.pak_1c89270f_4b2d_422a_ad62_3902474c644d" Guid="6d83129a-5789-4cb6-99ff-294cc488e2ff" Win64="no">
+                <File Name="th.pak" Id="_locales_th.pak_1c89270f_4b2d_422a_ad62_3902474c644d" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\th.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_tr.pak_9be80fc5_70a5_43af_bddf_bfe40db79884" Guid="92c8e533-8df7-43dd-bc6a-2161e02b5e1e" Win64="no">
+                <File Name="tr.pak" Id="_locales_tr.pak_9be80fc5_70a5_43af_bddf_bfe40db79884" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\tr.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_uk.pak_c58bfa29_bea1_4d01_940c_86dcbc07a8d4" Guid="57f0ad91-a366-406a-88d0-faad0536a5e1" Win64="no">
+                <File Name="uk.pak" Id="_locales_uk.pak_c58bfa29_bea1_4d01_940c_86dcbc07a8d4" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\uk.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_ur.pak_f1b70932_2f29_4422_ae94_cd199bf8fb74" Guid="aca842a6-365d-456f-9fd9-39456d3309f1" Win64="no">
+                <File Name="ur.pak" Id="_locales_ur.pak_f1b70932_2f29_4422_ae94_cd199bf8fb74" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\ur.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_vi.pak_b2e81b4e_469d_4774_8fe9_663eb445171e" Guid="e41961f7-89e2-4033-81ae-9b9999632272" Win64="no">
+                <File Name="vi.pak" Id="_locales_vi.pak_b2e81b4e_469d_4774_8fe9_663eb445171e" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\vi.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_zh_CN.pak_17616b7f_17ae_49cc_bc8a_007d3476c256" Guid="6fb1dbe6-c3b6-4855-956e-3652bdad7ff9" Win64="no">
+                <File Name="zh-CN.pak" Id="_locales_zh_CN.pak_17616b7f_17ae_49cc_bc8a_007d3476c256" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\zh-CN.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+              <Component Id="_locales_zh_TW.pak_4fc2d375_301b_493a_bc44_6aba61c8ce30" Guid="cdd98ac9-530e-42bd-bfdb-acf83b6bc087" Win64="no">
+                <File Name="zh-TW.pak" Id="_locales_zh_TW.pak_4fc2d375_301b_493a_bc44_6aba61c8ce30" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\locales\zh-TW.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+            </Directory>
+            <Directory Id="_resources_18c16419_5327_4cbe_93fd_f8b612338f6c" Name="resources">
+              <Component Id="_resources_app.asar_3ba49855_94e7_44b7_9bed_c8c9887395e7" Guid="43d95c84-2b12-4812-bd97-a625b33ab40a" Win64="no">
+                <File Name="app.asar" Id="_resources_app.asar_3ba49855_94e7_44b7_9bed_c8c9887395e7" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\resources\app.asar" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+              </Component>
+            </Directory>            <Component Id="_LICENSE.electron.txt_27e2d46e_314b_4f05_97af_c41b1b430b9e" Guid="d5afffdd-3b78-4c68-be89-78fcfd0f7718" Win64="no">
+              <File Name="LICENSE.electron.txt" Id="_LICENSE.electron.txt_27e2d46e_314b_4f05_97af_c41b1b430b9e" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\LICENSE.electron.txt" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_LICENSES.chromium.html_0f5d2379_f3aa_48b4_ab38_bceb6fc4d1c4" Guid="084ed31f-7479-46e4-9b59-00d5005e27ce" Win64="no">
+              <File Name="LICENSES.chromium.html" Id="_LICENSES.chromium.html_0f5d2379_f3aa_48b4_ab38_bceb6fc4d1c4" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\LICENSES.chromium.html" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_Leitor_Control_iD.exe_a3acc70b_b05a_4e6b_82cc_3c73aa61a0a9" Guid="23569cb7-5e55-47ad-8d33-002c63932d8a" Win64="no">
+              <File Name="Leitor Control iD.exe" Id="_Leitor_Control_iD.exe_a3acc70b_b05a_4e6b_82cc_3c73aa61a0a9" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\Leitor Control iD.exe" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_chrome_100_percent.pak_899a122f_e17d_4b45_b566_fe787e6de987" Guid="671a3125-072b-4d47-9ca2-2b91f39be752" Win64="no">
+              <File Name="chrome_100_percent.pak" Id="_chrome_100_percent.pak_899a122f_e17d_4b45_b566_fe787e6de987" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\chrome_100_percent.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_chrome_200_percent.pak_2d69a29f_43d3_4c49_8fb7_e40e59305d29" Guid="6a722cb2-aa8d-45ec-bcfe-cebd173df75e" Win64="no">
+              <File Name="chrome_200_percent.pak" Id="_chrome_200_percent.pak_2d69a29f_43d3_4c49_8fb7_e40e59305d29" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\chrome_200_percent.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_d3dcompiler_47.dll_88600f86_ac0a_4a9f_8011_108354394999" Guid="7113ef02-f9f5-4440-b3d4-c5831aa467fc" Win64="no">
+              <File Name="d3dcompiler_47.dll" Id="_d3dcompiler_47.dll_88600f86_ac0a_4a9f_8011_108354394999" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\d3dcompiler_47.dll" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_ffmpeg.dll_2757d031_05ca_4cde_8424_0cb8dffc3abb" Guid="8dffbffa-c20e-43bc-92a1-9163e3c98101" Win64="no">
+              <File Name="ffmpeg.dll" Id="_ffmpeg.dll_2757d031_05ca_4cde_8424_0cb8dffc3abb" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\ffmpeg.dll" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_icudtl.dat_3bd7f7ca_c8b0_4789_ad65_28a20342ea29" Guid="2071b963-ebf6-4eea-81da-cb964b52e096" Win64="no">
+              <File Name="icudtl.dat" Id="_icudtl.dat_3bd7f7ca_c8b0_4789_ad65_28a20342ea29" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\icudtl.dat" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_libEGL.dll_99195dbd_b3e4_4846_b5d5_36359de56253" Guid="f53102c8-e65b-46c0-8313-0585488d78b5" Win64="no">
+              <File Name="libEGL.dll" Id="_libEGL.dll_99195dbd_b3e4_4846_b5d5_36359de56253" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\libEGL.dll" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_libGLESv2.dll_c5aae4ce_9f5e_4b0b_80e3_420239a503c4" Guid="78012c6f-dd57-493e-a56e-97531223a52e" Win64="no">
+              <File Name="libGLESv2.dll" Id="_libGLESv2.dll_c5aae4ce_9f5e_4b0b_80e3_420239a503c4" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\libGLESv2.dll" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_resources.pak_8ad8c70e_f48e_4bc3_81a0_d137576c7e24" Guid="b7092456-0d2c-4946-b57f-22d32af8b73d" Win64="no">
+              <File Name="resources.pak" Id="_resources.pak_8ad8c70e_f48e_4bc3_81a0_d137576c7e24" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\resources.pak" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_snapshot_blob.bin_a9a6af47_0d9a_4444_a45a_6c04c4ca3a29" Guid="410e6a02-aeb9-4916-a4b5-3ff25af598b3" Win64="no">
+              <File Name="snapshot_blob.bin" Id="_snapshot_blob.bin_a9a6af47_0d9a_4444_a45a_6c04c4ca3a29" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\snapshot_blob.bin" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_v8_context_snapshot.bin_9c2128ab_9a23_471e_a9bb_7490490d9149" Guid="729d92d8-e76c-4026-8f55-3d2a4a6ef064" Win64="no">
+              <File Name="v8_context_snapshot.bin" Id="_v8_context_snapshot.bin_9c2128ab_9a23_471e_a9bb_7490490d9149" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\v8_context_snapshot.bin" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_vk_swiftshader.dll_a85c0b3d_2a61_4e2e_9754_e6c6bf1d6158" Guid="cab5e869-d2c9-4b31-b489-08210e88fce5" Win64="no">
+              <File Name="vk_swiftshader.dll" Id="_vk_swiftshader.dll_a85c0b3d_2a61_4e2e_9754_e6c6bf1d6158" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\vk_swiftshader.dll" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_vk_swiftshader_icd.json_2ed84d1c_28a8_41d4_9f20_671adff4fca7" Guid="038ccf2b-8fb9-42ad-85b5-969d309c438e" Win64="no">
+              <File Name="vk_swiftshader_icd.json" Id="_vk_swiftshader_icd.json_2ed84d1c_28a8_41d4_9f20_671adff4fca7" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\vk_swiftshader_icd.json" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+            <Component Id="_vulkan_1.dll_30422ef6_24e2_4982_b901_9799ec1e71bf" Guid="61608f3a-c928-4668-ad9d-bf937e942e2b" Win64="no">
+              <File Name="vulkan-1.dll" Id="_vulkan_1.dll_30422ef6_24e2_4982_b901_9799ec1e71bf" Source="C:\Users\vinne\Desktop\Filter ControliD\dist\win-unpacked\vulkan-1.dll" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+            </Component>
+          </Directory>
+          <Component Id="_Leitor_Control_iD.exe_6d284c68_e346_41c2_898a_cf4133c66dd0" Guid="c6caf00e-f235-47f9-8f63-f6fb36b803a4" Win64="no">
+            <File Name="Leitor Control iD.exe" Id="_Leitor_Control_iD.exe_6d284c68_e346_41c2_898a_cf4133c66dd0" Source="C:\Users\vinne\AppData\Local\Temp\Leitor Control iDGDRvKO\Leitor Control iD.exe" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+          </Component>
+          <Component Id="_.installInfo.json_c7fddee8_8b6c_4762_8565_12d7235cc7da" Guid="13e82424-f35d-45cf-b299-8e60288b4624" Win64="no">
+            <File Name=".installInfo.json" Id="_.installInfo.json_c7fddee8_8b6c_4762_8565_12d7235cc7da" Source="C:\Users\vinne\AppData\Local\Temp\.installInfo41LhtW\.installInfo.json" KeyPath="yes" Checksum="yes" ProcessorArchitecture="x86"/>
+
+          </Component>
+          <Component Id="RegistryInstallPath" Guid="219da69d-801b-4dca-9faa-e3b7433fc191" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="InstallPath" Type="string" Value="[APPLICATIONROOTDIRECTORY]" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+          <Component Id="UninstallDisplayName" Guid="11cdbf79-3089-429e-b50e-5ddae7ff1920" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="DisplayName" Type="string" Value="[VisibleProductName]" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+          <Component Id="UninstallPublisher" Guid="ed0d7230-4516-4b3c-b3a5-0017a9f62032" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="Publisher" Type="string" Value="Vinicius Falcao" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+          <Component Id="UninstallDisplayVersion" Guid="7296f177-d369-45b0-ba7c-2250d8a72441" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="DisplayVersion" Type="string" Value="1.0.0" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+          <Component Id="UninstallModifyString" Guid="6b315c47-decc-4a05-9010-06f153abeedc" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="ModifyPath" Type="expandable" Value="MsiExec.exe /I {6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+          <Component Id="UninstallString" Guid="f0906bb0-2c0a-4377-ba40-8c42c083efba" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="UninstallString" Type="expandable" Value="MsiExec.exe /X {6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+          <Component Id="UninstallDisplayIcon" Guid="27e2180b-1ee2-45b0-a68c-68a73e30ed0b" Win64="no">
+            <RegistryKey Root="HKMU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6C0F1E27-7AB9-4400-8C13-E8867C7D74C6}.msq" ForceCreateOnInstall="no" ForceDeleteOnUninstall="yes">
+              <RegistryValue Name="DisplayIcon" Type="expandable" Value="[APPLICATIONROOTDIRECTORY]Leitor Control iD.exe" KeyPath="yes"/>
+            </RegistryKey>
+          </Component>
+        </Directory>
+      </Directory>
+
+      <!-- Desktop -->
+      <Directory Id="DesktopFolder" Name="Desktop" />
+
+      <!-- Start Menu -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Vinicius Falcao"/>
+      </Directory>
+    </Directory>
+
+    <!-- Step 3: Add app to Start Menu -->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="f1661a8e-c4ae-4a15-a51f-ea9ea886a159" Win64="no">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="LeitorControliD"
+                  Description="Leitor ControliD"
+                  Target="[APPLICATIONROOTDIRECTORY]Leitor Control iD.exe"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY">
+          <ShortcutProperty Key="System.AppUserModel.ID" Value="com.squirrel.leitorcontrolid.leitor control id"/>
+        </Shortcut>
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU"
+                       Key="Software\Microsoft\LeitorControliD"
+                       Name="installed"
+                       Type="integer"
+                       Value="1"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+   <!-- Step 4: Add app desktop shortcut --> 
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="4ad29787-540c-4270-a217-5c7c0f2e8994" >
+          <Shortcut Id="MyDesktopShortcut"
+                    Name="LeitorControliD"
+                    Description="Leitor ControliD"
+                    Target="[APPLICATIONROOTDIRECTORY]Leitor Control iD.exe"
+                    WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+          <RegistryValue Root="HKCU"
+                    Key="Software\Microsoft\LeitorControliD"
+                    Name="installed"
+                    Type="integer"
+                    Value="1"
+                    KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+
+    <!-- Lets cleanup any files that are were not part of the initial install
+    via this MSI. Such as newer versions installed by the auto-updater. -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="PurgeOnUninstall" Guid="918a851a-acad-47f2-8765-018ddc55c5f5" Win64="no">
+        <CreateFolder/>
+        <util:RemoveFolderEx On="uninstall" Property="INSTALLPATH" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="Complete" Title="LeitorControliD (1.0.0)" Description="The complete package." Display="expand" Level="1" >
+      <!-- Step 5: Tell WiX to install the files -->
+      <Feature Id="MainApplication" Title="Main Application" Level="1" Description="The main components to run the applications." >
+        <ComponentRef Id="_locales_af.pak_66d60539_e93a_4a99_aad8_5cfaf548b4b8" />
+        <ComponentRef Id="_locales_am.pak_6ee941da_fd36_479d_b0c4_72204c5a4c53" />
+        <ComponentRef Id="_locales_ar.pak_190d805e_adee_44a2_ae22_1b0ec4785126" />
+        <ComponentRef Id="_locales_bg.pak_55ad7ff7_dd88_4250_894f_4c937b259f37" />
+        <ComponentRef Id="_locales_bn.pak_18d9f79c_0673_498c_bffd_65cc38029404" />
+        <ComponentRef Id="_locales_ca.pak_ec483033_3c2e_4605_8d9a_fbc6ffb86e98" />
+        <ComponentRef Id="_locales_cs.pak_c6062c8c_7040_4d47_a092_5394347a8e45" />
+        <ComponentRef Id="_locales_da.pak_43d1726d_8ea8_490b_a7f1_b35a8f5df50c" />
+        <ComponentRef Id="_locales_de.pak_0a3f7eb2_9402_4c1a_b381_2d2c03c2786b" />
+        <ComponentRef Id="_locales_el.pak_3c2ae5a5_b943_43b6_9bb1_a89639a710b3" />
+        <ComponentRef Id="_locales_en_GB.pak_fa5883a3_46a9_4ba4_8dcf_0fd3f907ab43" />
+        <ComponentRef Id="_locales_en_US.pak_058af64d_64d5_4b95_9e7e_c0320e81a2ec" />
+        <ComponentRef Id="_locales_es_419.pak_ef7873bf_3c04_4e97_9086_c6422e9dfaba" />
+        <ComponentRef Id="_locales_es.pak_c0910ec0_5d14_4081_9efb_039c74a3ceca" />
+        <ComponentRef Id="_locales_et.pak_095769a6_80b3_4c3f_a01c_2a557398a47e" />
+        <ComponentRef Id="_locales_fa.pak_9292bf99_09fb_4889_9072_a2b9f012e6b0" />
+        <ComponentRef Id="_locales_fi.pak_b6d3a3f7_6580_4522_8735_67c273fc94aa" />
+        <ComponentRef Id="_locales_fil.pak_0d2fd058_f996_43f9_a8ec_607eea064dc8" />
+        <ComponentRef Id="_locales_fr.pak_95310fe2_1506_4539_bced_5dd3b082e916" />
+        <ComponentRef Id="_locales_gu.pak_2e545ecc_09dd_454c_8d4e_3169e3429b39" />
+        <ComponentRef Id="_locales_he.pak_2ed66cad_e3d1_4e2f_8595_6735293ce7b2" />
+        <ComponentRef Id="_locales_hi.pak_85d388c7_850b_4fa3_b68d_58e927517826" />
+        <ComponentRef Id="_locales_hr.pak_42be367a_cbb4_4b8c_b8b8_367996909672" />
+        <ComponentRef Id="_locales_hu.pak_3884b405_e55e_4d18_94ca_4878bc8a8386" />
+        <ComponentRef Id="_locales_id.pak_80b8cf5d_ed41_4c5f_b7d9_191897819e81" />
+        <ComponentRef Id="_locales_it.pak_c347fe16_4862_4037_8a05_e57fac965b84" />
+        <ComponentRef Id="_locales_ja.pak_2eced482_a398_4a3d_8c83_00ba989115a3" />
+        <ComponentRef Id="_locales_kn.pak_8910f386_87ee_4cc6_8c3e_d848ddda33ba" />
+        <ComponentRef Id="_locales_ko.pak_6500ebef_f472_462c_b137_8a1371ef1403" />
+        <ComponentRef Id="_locales_lt.pak_f2362d8a_4960_4fec_8eab_674adb278e1c" />
+        <ComponentRef Id="_locales_lv.pak_dc984fb4_9c04_4287_8423_5bd6447858d3" />
+        <ComponentRef Id="_locales_ml.pak_00100d34_307d_4b01_b031_15a67d2835cc" />
+        <ComponentRef Id="_locales_mr.pak_51ae1001_4107_4524_9cce_1d13595de595" />
+        <ComponentRef Id="_locales_ms.pak_62f0d101_7d10_48f2_a8bc_8bd1e97b66b3" />
+        <ComponentRef Id="_locales_nb.pak_30922d34_757d_421c_bb79_6f28de0d307c" />
+        <ComponentRef Id="_locales_nl.pak_6a68957a_669a_41d1_b640_2d53142e2b4f" />
+        <ComponentRef Id="_locales_pl.pak_1f6e3421_ee25_4f26_9586_1fa90b05fbb8" />
+        <ComponentRef Id="_locales_pt_BR.pak_d5422f45_a7c0_4f9c_a7e7_bc9d5def9628" />
+        <ComponentRef Id="_locales_pt_PT.pak_2abe9910_c3e1_4fff_8d14_f5456c6559b1" />
+        <ComponentRef Id="_locales_ro.pak_9320a4be_5559_4220_ad2e_3f2bec98ce5c" />
+        <ComponentRef Id="_locales_ru.pak_8e327e31_1658_4a07_9563_9109045469de" />
+        <ComponentRef Id="_locales_sk.pak_fccf17fa_3b36_4275_8343_fd29f1c3a5d2" />
+        <ComponentRef Id="_locales_sl.pak_e5cefebd_bcb5_4c93_86ab_6df202c2ad76" />
+        <ComponentRef Id="_locales_sr.pak_d286aa81_c8ed_4a57_a360_c64797ac3af9" />
+        <ComponentRef Id="_locales_sv.pak_d2ff95ae_93de_4cee_bcf1_b9ae6b29b3c7" />
+        <ComponentRef Id="_locales_sw.pak_2067dd64_e354_4e56_8813_13e70376577f" />
+        <ComponentRef Id="_locales_ta.pak_040cbef9_7009_4493_a9df_9e8f40f6fd56" />
+        <ComponentRef Id="_locales_te.pak_de1bbd12_1d80_4f05_a7bd_0aed314f7438" />
+        <ComponentRef Id="_locales_th.pak_1c89270f_4b2d_422a_ad62_3902474c644d" />
+        <ComponentRef Id="_locales_tr.pak_9be80fc5_70a5_43af_bddf_bfe40db79884" />
+        <ComponentRef Id="_locales_uk.pak_c58bfa29_bea1_4d01_940c_86dcbc07a8d4" />
+        <ComponentRef Id="_locales_ur.pak_f1b70932_2f29_4422_ae94_cd199bf8fb74" />
+        <ComponentRef Id="_locales_vi.pak_b2e81b4e_469d_4774_8fe9_663eb445171e" />
+        <ComponentRef Id="_locales_zh_CN.pak_17616b7f_17ae_49cc_bc8a_007d3476c256" />
+        <ComponentRef Id="_locales_zh_TW.pak_4fc2d375_301b_493a_bc44_6aba61c8ce30" />
+        <ComponentRef Id="_resources_app.asar_3ba49855_94e7_44b7_9bed_c8c9887395e7" />
+        <ComponentRef Id="_LICENSE.electron.txt_27e2d46e_314b_4f05_97af_c41b1b430b9e" />
+        <ComponentRef Id="_LICENSES.chromium.html_0f5d2379_f3aa_48b4_ab38_bceb6fc4d1c4" />
+        <ComponentRef Id="_Leitor_Control_iD.exe_a3acc70b_b05a_4e6b_82cc_3c73aa61a0a9" />
+        <ComponentRef Id="_chrome_100_percent.pak_899a122f_e17d_4b45_b566_fe787e6de987" />
+        <ComponentRef Id="_chrome_200_percent.pak_2d69a29f_43d3_4c49_8fb7_e40e59305d29" />
+        <ComponentRef Id="_d3dcompiler_47.dll_88600f86_ac0a_4a9f_8011_108354394999" />
+        <ComponentRef Id="_ffmpeg.dll_2757d031_05ca_4cde_8424_0cb8dffc3abb" />
+        <ComponentRef Id="_icudtl.dat_3bd7f7ca_c8b0_4789_ad65_28a20342ea29" />
+        <ComponentRef Id="_libEGL.dll_99195dbd_b3e4_4846_b5d5_36359de56253" />
+        <ComponentRef Id="_libGLESv2.dll_c5aae4ce_9f5e_4b0b_80e3_420239a503c4" />
+        <ComponentRef Id="_resources.pak_8ad8c70e_f48e_4bc3_81a0_d137576c7e24" />
+        <ComponentRef Id="_snapshot_blob.bin_a9a6af47_0d9a_4444_a45a_6c04c4ca3a29" />
+        <ComponentRef Id="_v8_context_snapshot.bin_9c2128ab_9a23_471e_a9bb_7490490d9149" />
+        <ComponentRef Id="_vk_swiftshader.dll_a85c0b3d_2a61_4e2e_9754_e6c6bf1d6158" />
+        <ComponentRef Id="_vk_swiftshader_icd.json_2ed84d1c_28a8_41d4_9f20_671adff4fca7" />
+        <ComponentRef Id="_vulkan_1.dll_30422ef6_24e2_4982_b901_9799ec1e71bf" />
+        <ComponentRef Id="_Leitor_Control_iD.exe_6d284c68_e346_41c2_898a_cf4133c66dd0" />
+        <ComponentRef Id="_.installInfo.json_c7fddee8_8b6c_4762_8565_12d7235cc7da" />
+        <ComponentRef Id="RegistryInstallPath" />
+        <ComponentRef Id="UninstallDisplayName" />
+        <ComponentRef Id="UninstallPublisher" />
+        <ComponentRef Id="UninstallDisplayVersion" />
+        <ComponentRef Id="UninstallModifyString" />
+        <ComponentRef Id="UninstallString" />
+        <ComponentRef Id="UninstallDisplayIcon" />
+        <ComponentRef Id="ApplicationShortcut" />
+        <ComponentRef Id="DesktopShortcut" />
+        <ComponentRef Id="PurgeOnUninstall" />
+      </Feature> 
+    </Feature> 
+  </Product>
+</Wix>

@@ -1,0 +1,1 @@
+// Opcional: Comunicação segura entre frontend e backend
