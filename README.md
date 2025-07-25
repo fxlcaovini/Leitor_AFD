@@ -1,6 +1,6 @@
-# Leitor AFD | Control iD
+# Leitor AFD 
 
-Leitor AFD é um aplicativo desktop desenvolvido em Electron para facilitar a leitura, filtragem e análise de arquivos AFD (Arquivo Fonte de Dados) gerados por relógios de ponto Control iD, compatível com os layouts das Portarias 1510 e 671.
+Leitor AFD é um aplicativo desktop desenvolvido  para facilitar a leitura, filtragem e análise de arquivos AFD (Arquivo Fonte de Dados) gerados por relógios de ponto, compatível com os layouts das Portarias 1510 e 671.
 
 ## Funcionalidades
 
@@ -26,7 +26,7 @@ Leitor AFD é um aplicativo desktop desenvolvido em Electron para facilitar a le
 ## Requisitos
 
 - Windows 10 ou superior
-- Arquivos AFD gerados por Control iD (Portaria 1510 ou 671)
+- Arquivos AFD gerados pela Portaria 1510 e 671
 
 ## Licença
 
