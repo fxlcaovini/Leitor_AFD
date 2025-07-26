@@ -1,15 +1,11 @@
-# Ignora arquivos e pastas de build e dependências
 /dist/
 /node_modules/
 *.exe
 *.dll
 *.log
 *.tmp
-
-# Ignora arquivos do sistema operacional
 .DS_Store
 Thumbs.db
 
-# Ignora arquivos de configuração do editor
 .vscode/
 .idea/
