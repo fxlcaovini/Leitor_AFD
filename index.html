@@ -8,6 +8,28 @@
   <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 </head>
 <body>
+  <!-- Ícone de ajuda -->
+<div id="help-icon" title="Ajuda">
+  <svg width="32" height="32" fill="#ef5350" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="12" fill="#222"/>
+    <text x="12" y="18" text-anchor="middle" font-size="18" fill="#ffffff" font-family="Arial" font-weight="bold">?</text>
+  </svg>
+</div>
+
+  <div id="help-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Como usar?</h2>
+    <ul>
+      <li><b>Escolha um arquivo AFD</b> clicando no botão "Escolher arquivo AFD".</li>
+      <li><b>Digite o CPF ou PIS</b> do colaborador para filtrar os registros.</li>
+      <li><b>Use os botões de filtro</b> para visualizar marcações, ajustes (inclusão, alteração e exclusão), eventos sensíveis e alterações de data/hora.</li>
+      <li><b>Baixe o resultado</b> clicando em "Baixar Resultado".</li>
+      <li>O aplicativo suporta arquivos dos layouts das Portarias 1510 e 671.</li>
+    </ul>
+  </div>
+</div> 
+
   <div class="input-group">
     <label for="afdFile" tabindex="0">Escolher arquivo AFD</label>
     <input type="file" id="afdFile" accept=".txt" />

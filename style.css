@@ -9,7 +9,81 @@ body {
   flex-direction: column;
   align-items: center;
 }
+/* Ícone de ajuda */
+/* Ícone de ajuda */
+#help-icon {
+  position: fixed;
+  top: 24px;
+  right: 24px; /* alterado para lado direito */
+  z-index: 1000;
+  cursor: pointer;
+  transition: transform 0.2s;
+  background: #ef5350; /* fundo vermelho */
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ef5350bb;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#help-icon:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 16px #ef5350cc;
+}
 
+/* Modal de ajuda */
+.modal {
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(0,0,0,0.65);
+  transition: opacity 0.35s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: #222;
+  color: #eee;
+  margin: 6% auto;
+  padding: 32px 28px;
+  border-radius: 16px;
+  max-width: 600px;
+  box-shadow: 0 0 24px #ef5350bb;
+  position: relative;
+  line-height: 1.9;
+  font-size: 17px;
+  transform: scale(0.85) translateY(-40px);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(.68,-0.55,.27,1.55), opacity 0.35s ease;
+}
+
+.modal.show .modal-content {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+.close {
+  color: #ef5350;
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.close:hover {
+  color: #fff;
+}
 h1 {
   margin-bottom: 30px;
   color: #ff4141;

@@ -6,7 +6,6 @@ const afdFileInput = document.getElementById('afdFile');
 const cpfInput = document.getElementById('cpf');
 const output = document.getElementById('output');
 
-// Detecta layout do arquivo (1510 ou 671) pelas 2 primeiras linhas
 function detectarLayoutAFD(linhas) {
   if (!linhas.length) {
     layoutAFD = '671';
@@ -230,7 +229,7 @@ function filtrarAjustesPorCPF() {
       resultados = linhasAFD.filter(linha => {
         const tipo = linha.charAt(9);
         const pisColab = linha.substring(23, 35);
-        const cpfResponsavel = linha.substring(92, 103);
+        const cpfResponsavel = linha.substring(91, 102);
         return tipo === '5' && (pisColab.includes(busca) || cpfResponsavel.includes(busca));
       }).map(linha => {
         const nsr = linha.substring(0, 9);
@@ -245,7 +244,7 @@ function filtrarAjustesPorCPF() {
         const pisEmpregado = linha.substring(23, 35);
         const nomeEmpregado = linha.substring(35, 87).trim();
         const demaisDados = linha.substring(87, 91);
-        const cpfResponsavel = linha.substring(92, 103);
+        const cpfResponsavel = linha.substring(91, 102);
 
         return `${linha}\n\nNSR: ${nsr} | Tipo 5 - ${tipoOperacao} de colaborador (1510)
 Data/Hora: ${formatarData1510(dataGravacao, horaGravacao)}
@@ -413,7 +412,6 @@ afdFileInput.addEventListener('change', (e) => {
   };
   reader.readAsText(file, 'iso-8859-1');
 });
-const { shell } = require('electron');
 
 document.addEventListener('DOMContentLoaded', () => {
   const link = document.getElementById('github-link');
@@ -421,8 +419,32 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
       const url = link.href;
-      shell.openExternal(url);
+
+      if (window.shell) {
+        window.shell.openExternal(url);
+      } else if (typeof require === 'function') {
+        // Electron context
+        const { shell } = require('electron');
+        shell.openExternal(url);
+      } else {
+        window.open(url, '_blank');
+      }
     });
   }
-});
-
+  const helpIcon = document.getElementById('help-icon');
+  const helpModal = document.getElementById('help-modal');
+  const closeBtn = document.querySelector('.modal .close');
+  
+  if (helpIcon && helpModal && closeBtn) {
+    helpIcon.addEventListener('click', () => {
+      helpModal.classList.add('show');
+    });
+    closeBtn.addEventListener('click', () => {
+      helpModal.classList.remove('show');
+    });
+    window.addEventListener('click', (event) => {
+      if (event.target === helpModal) {
+        helpModal.classList.remove('show');
+      }
+    });
+  }});
