@@ -27,7 +27,3 @@ Leitor AFD é um aplicativo desktop desenvolvido  para facilitar a leitura, filt
 
 - Windows 10 ou superior
 - Arquivos AFD gerados pela Portaria 1510 e 671
-
-## Licença
-
-© 2025 Vinicius Falcão
